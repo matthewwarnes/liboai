@@ -8,10 +8,17 @@ if(MSVC)
   set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 
-find_package(nlohmann_json CONFIG REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
+#add_library(json INTERFACE)
+#target_link_libraries(json INTERFACE nlohmann_json::nlohmann_json)
+
 find_package(CURL REQUIRED)
 
-add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME} STATIC)
 
 function(make_absolute_paths result_var)
     set(absolute_paths)
@@ -109,7 +116,7 @@ target_include_directories(${PROJECT_NAME}
     "$<INSTALL_INTERFACE:include>"
 )
 
-install(TARGETS ${PROJECT_NAME} DESTINATION lib EXPORT ${PROJECT_NAME}Targets)
+#install(TARGETS ${PROJECT_NAME} DESTINATION lib EXPORT ${PROJECT_NAME}Targets)
 install(FILES ${HEADERS} DESTINATION "include")
 install(FILES ${COMPONENT_HEADERS} DESTINATION "include/components")
 install(FILES ${CORE_HEADERS} DESTINATION "include/core")
@@ -124,11 +131,11 @@ write_basic_package_version_file(
   COMPATIBILITY AnyNewerVersion
 )
 
-install(EXPORT ${PROJECT_NAME}Targets
-  FILE ${PROJECT_NAME}Targets.cmake
-  NAMESPACE oai::
-  DESTINATION "lib/cmake/${PROJECT_NAME}"
-)
+#install(EXPORT ${PROJECT_NAME}Targets
+#  FILE ${PROJECT_NAME}Targets.cmake
+#  NAMESPACE oai::
+#  DESTINATION "lib/cmake/${PROJECT_NAME}"
+#)
 install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
